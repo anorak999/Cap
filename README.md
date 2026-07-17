@@ -59,6 +59,21 @@ GSettings schema `org.gnome.shell.extensions.cap`:
 
 ## Install
 
+### One-command (recommended)
+
+```sh
+./install.sh        # compiles schemas, links, and enables
+./uninstall.sh      # disables and removes
+```
+
+Both scripts must be run from the Cap source directory. After `install.sh`,
+restart GNOME Shell to load the indicator:
+
+- **Wayland**: log out and back in.
+- **X11**: `Alt+F2` → `r` → `Enter`.
+
+### Manual
+
 ```sh
 # 1. Compile the GSettings schema.
 glib-compile-schemas /home/anorak/Cap/schemas
@@ -80,6 +95,7 @@ gnome-extensions enable cap@anorak
 - `prefs.js` — libadwaita preferences window (limit + usage reset).
 - `schemas/org.gnome.shell.extensions.cap.gschema.xml` — settings keys.
 - `stylesheet.css` — popup widget styling.
+- `install.sh` / `uninstall.sh` — one-command install and removal.
 
 ## License
 
