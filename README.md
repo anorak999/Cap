@@ -31,31 +31,33 @@ GNOME Shell 48.
 - Warning state: the label shifts to the system warning color once usage
   crosses 90% of the daily limit.
 
-## Dropdown panel
+## Dropdown styles
 
-```
-+----------------------------------------+
-| Cap: Daily Data Status                 |
-| 742 MB / 1024 MB Used                  |
-| [██████████████████████░░░░░░░░] (72%) |
-| Limit:  [---------o----------]         |
-| Value:  [ 1024 ] MB                    |
-| [ Re-enable Wi-Fi ]   (after cutoff)   |
-+----------------------------------------+
-```
+Cap ships three switchable panel styles. Pick one from
+`gnome-extensions prefs cap@anorak` → **Appearance**.
 
-The slider maps 100 MB – 50,000 MB; the integer entry accepts the same range.
-Both write through to GSettings instantly.
+### Default
+
+Classic vertical layout with progress bar, slider, and numeric entry.
+
+### Orbit
+
+Ring gauge showing usage proportionally, with a card-style limit slider.
+
+### Strata
+
+Flat row-list with inline bar, percentage readout, and compact slider control.
 
 ## Settings
 
 GSettings schema `org.gnome.shell.extensions.cap`:
 
-| Key              | Type | Default | Notes                                            |
-|------------------|------|---------|--------------------------------------------------|
-| `daily-limit-mb` | `i`  | `1024`  | Range 100 – 50,000.                              |
-| `used-bytes`     | `x`  | `0`     | Auto-resets to 0 at midnight.                    |
-| `current-date`   | `s`  | `""`    | Tracked day (`YYYY-MM-DD`) for rollover detection.|
+| Key              | Type | Default     | Notes                                             |
+|------------------|------|-------------|---------------------------------------------------|
+| `daily-limit-mb` | `i`  | `1024`      | Range 100 – 50,000.                               |
+| `used-bytes`     | `x`  | `0`         | Auto-resets to 0 at midnight.                     |
+| `current-date`   | `s`  | `""`        | Tracked day (`YYYY-MM-DD`) for rollover detection.|
+| `popup-style`    | `s`  | `"default"` | `default`, `orbit`, or `strata`.                  |
 
 ## Install
 
@@ -92,9 +94,9 @@ gnome-extensions enable cap@anorak
 ## Files
 
 - `extension.js` — indicator, telemetry loop, state machine, dropdown UI.
-- `prefs.js` — libadwaita preferences window (limit + usage reset).
+- `prefs.js` — libadwaita preferences window (style, limit, usage reset).
 - `schemas/org.gnome.shell.extensions.cap.gschema.xml` — settings keys.
-- `stylesheet.css` — popup widget styling.
+- `stylesheet.css` — popup widget styling for all three panel styles.
 - `install.sh` / `uninstall.sh` — one-command install and removal.
 
 ## License

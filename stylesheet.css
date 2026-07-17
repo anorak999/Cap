@@ -1,15 +1,146 @@
 /*
  * Cap — GNOME Shell data limiter
- * Stylesheet: sizing and color treatment for the popup panel widgets.
+ * Stylesheet: popup panel layout, status section, slider, value pill.
+ *
+ * Colors use named GTK tokens where available; custom hex only for
+ * teal/amber/red states that have no theme-provided equivalent.
  */
 
-/* Top-bar indicator label */
+/* ── Top-bar indicator label ──────────────────────────────────────── */
+
 .cap-panel-label {
     spacing: 6px;
     margin: 0 6px;
 }
 
-/* Usage figure readouts */
+/* ── Popup container ─────────────────────────────────────────────── */
+
+.cap-popup-container {
+    padding: 20px;
+    border-radius: 14px;
+}
+
+/* ── Status section ──────────────────────────────────────────────── */
+
+.cap-status-label {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: #9a9aa5;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.cap-usage-row {
+    spacing: 0;
+    margin-bottom: 10px;
+}
+
+.cap-usage-value {
+    font-size: 26px;
+    font-weight: 500;
+    color: #f0f0f2;
+}
+
+.cap-usage-limit {
+    font-size: 13px;
+    color: #9a9aa5;
+    margin-left: 6px;
+}
+
+/* ── Progress bar ────────────────────────────────────────────────── */
+
+.cap-progress-track {
+    height: 6px;
+    background-color: #45454e;
+    border-radius: 3px;
+    margin-bottom: 18px;
+}
+
+.cap-progress-fill {
+    height: 6px;
+    border-radius: 3px;
+    background-color: #5DCAA5; /* normal / teal */
+}
+
+.cap-progress-fill.warning {
+    background-color: #EF9F27; /* amber */
+}
+
+.cap-progress-fill.exhausted {
+    background-color: #E24B4A; /* red */
+}
+
+/* ── Divider ─────────────────────────────────────────────────────── */
+
+.cap-divider {
+    border-top: 1px solid #45454e;
+    padding-top: 14px;
+    margin-top: 14px;
+}
+
+/* ── Limit section ───────────────────────────────────────────────── */
+
+.cap-limit-label {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: #9a9aa5;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.cap-slider-container {
+    margin-bottom: 6px;
+}
+
+.cap-slider-track {
+    height: 6px;
+    background-color: #45454e;
+    border-radius: 3px;
+}
+
+.cap-slider-fill {
+    height: 6px;
+    border-radius: 3px;
+    background-color: #5DCAA5;
+}
+
+.cap-slider-minmax {
+    spacing: 2px;
+    margin-top: 4px;
+}
+
+.cap-slider-minmax-label {
+    font-size: 11px;
+    color: #6f6f78;
+}
+
+/* ── Value row (pill) ────────────────────────────────────────────── */
+
+.cap-value-row {
+    background-color: #34343c;
+    border-radius: 8px;
+    padding: 8px 12px;
+    spacing: 4px;
+    margin-top: 14px;
+}
+
+.cap-value-entry {
+    min-width: 96px;
+}
+
+.cap-value-unit {
+    font-size: 12px;
+    color: #6f6f78;
+}
+
+/* ── Re-enable Wi-Fi button ─────────────────────────────────────── */
+
+.cap-reenable-btn {
+    margin-top: 14px;
+}
+
+/* ── Legacy / compat (keep old readout class for prefs if needed) ─ */
+
 .cap-readout {
     font-size: 110%;
     font-weight: 700;
@@ -19,24 +150,201 @@
     spacing: 6px;
 }
 
-/* Inline usage bar in the dropdown.
- * ui/barLevel.js applies the 'barlevel' class by default; we keep that
- * styling and just constrain the track size so it fits the popup width. */
-.cap-bar {
-    min-width: 300px;
-    height: 18px;
+/* ================================================================== *
+ * Orbit style — ring gauge with icon badge and card                  *
+ * ================================================================== */
+
+.cap-orbit-header {
+    spacing: 10px;
+    margin-bottom: 16px;
 }
 
-/* Limit control row */
-.cap-limit-row {
-    spacing: 12px;
+.cap-orbit-icon-badge {
+    background-color: rgba(93, 202, 165, 0.15);
+    border-radius: 10px;
+    width: 34px;
+    height: 34px;
 }
 
-.cap-value-entry {
-    min-width: 96px;
+.cap-orbit-icon {
+    color: #5DCAA5;
+    icon-size: 18px;
 }
 
-/* Re-enable Wi-Fi action button (only shown after a cutoff) */
-.cap-reenable-btn {
+.cap-orbit-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #f0f0f2;
+}
+
+.cap-orbit-subtitle {
+    font-size: 11px;
+    color: #7a7a84;
+}
+
+.cap-orbit-stats-row {
+    spacing: 16px;
+    margin-bottom: 18px;
+}
+
+.cap-orbit-ring {
+    width: 76px;
+    height: 76px;
+}
+
+.cap-orbit-used {
+    font-size: 22px;
+    font-weight: 500;
+    color: #f0f0f2;
+}
+
+.cap-orbit-limit {
+    font-size: 12px;
+    color: #7a7a84;
+}
+
+.cap-orbit-card {
+    background-color: #26262e;
+    border-radius: 12px;
+    padding: 12px 14px;
+    spacing: 10px;
+    margin-bottom: 10px;
+}
+
+.cap-orbit-card-label {
+    font-size: 12px;
+    color: #9a9aa5;
+}
+
+.cap-orbit-card-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: #f0f0f2;
+}
+
+.cap-orbit-slider .slider-track {
+    height: 5px;
+    background-color: #38383f;
+}
+
+.cap-orbit-slider .slider-progress {
+    background-color: #5DCAA5;
+}
+
+.cap-orbit-slider .slider-handle {
+    background-color: #f0f0f2;
+    border: 2px solid #26262e;
+    width: 13px;
+    height: 13px;
+}
+
+.cap-orbit-reenable {
+    background-color: rgba(93, 202, 165, 0.12);
+    color: #5DCAA5;
+    font-weight: 500;
+    border-radius: 10px;
+    padding: 9px;
+}
+
+/* ================================================================== *
+ * Strata style — flat row-list with status pill                      *
+ * ================================================================== */
+
+.cap-strata-header {
+    background-color: #24242b;
+    padding: 16px 18px;
+    border-radius: 16px 16px 0 0;
+}
+
+.cap-strata-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #e8e8ea;
+}
+
+.cap-strata-pill {
+    font-size: 11px;
+    color: #5DCAA5;
+    background-color: rgba(93, 202, 165, 0.14);
+    padding: 3px 9px;
+    border-radius: 20px;
+}
+
+.cap-strata-pill.exhausted {
+    color: #E24B4A;
+    background-color: rgba(226, 75, 74, 0.14);
+}
+
+.cap-strata-body {
+    padding: 18px;
+    spacing: 0;
+}
+
+.cap-strata-usage-row {
+    margin-bottom: 8px;
+}
+
+.cap-strata-used {
+    font-size: 28px;
+    font-weight: 500;
+    color: #f0f0f2;
+}
+
+.cap-strata-percent {
+    font-size: 12px;
+    color: #7a7a84;
+}
+
+.cap-strata-bar-track {
+    height: 4px;
+    background-color: #33333b;
+    border-radius: 2px;
+    margin-bottom: 20px;
+}
+
+.cap-strata-bar-fill {
+    height: 4px;
+    background-color: #5DCAA5;
+    border-radius: 2px;
+}
+
+.cap-strata-row {
+    padding: 10px 0;
+    border-top: 1px solid #33333b;
+}
+
+.cap-strata-row-label {
+    font-size: 13px;
+    color: #9a9aa5;
+}
+
+.cap-strata-row-value {
+    font-size: 13px;
+    color: #d0d0d4;
+}
+
+.cap-strata-slider-wrap {
+    spacing: 10px;
+}
+
+.cap-strata-slider {
+    width: 110px;
+}
+
+.cap-strata-slider .slider-track {
+    height: 4px;
+    background-color: #38383f;
+}
+
+.cap-strata-slider .slider-progress {
+    background-color: #5DCAA5;
+}
+
+.cap-strata-reenable {
     margin-top: 12px;
+    background-color: rgba(93, 202, 165, 0.12);
+    color: #5DCAA5;
+    font-weight: 500;
+    border-radius: 10px;
+    padding: 9px;
 }

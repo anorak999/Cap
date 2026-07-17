@@ -16,5 +16,10 @@
       <summary>Tracked calendar day</summary>
       <description>The date (YYYY-MM-DD) for which used-bytes has been accumulated. Used to detect day rollover.</description>
     </key>
+    <key name="popup-style" type="s">
+      <default>'default'</default>
+      <summary>Popup style</summary>
+      <description>Visual style of the dropdown panel: default, orbit, or strata</description>
+    </key>
   </schema>
 </schemalist>

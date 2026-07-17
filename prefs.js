@@ -56,6 +56,37 @@ export default class CapPreferences {
         });
         window.add(page);
 
+        // ── Appearance ──────────────────────────────────────────
+
+        const styleGroup = new Adw.PreferencesGroup({
+            title: _('Appearance'),
+            description: _('Choose how the dropdown panel looks'),
+        });
+        page.add(styleGroup);
+
+        const styleModel = new Gtk.StringList();
+        styleModel.append(_('Default'));
+        styleModel.append(_('Orbit'));
+        styleModel.append(_('Strata'));
+
+        const styleRow = new Adw.ComboRow({
+            title: _('Popup style'),
+            subtitle: _('Applies immediately, no restart needed'),
+            model: styleModel,
+        });
+
+        const styleKeys = ['default', 'orbit', 'strata'];
+        const currentStyle = settings.get_string('popup-style');
+        styleRow.selected = styleKeys.indexOf(currentStyle) === -1 ? 0 : styleKeys.indexOf(currentStyle);
+
+        styleRow.connect('notify::selected', (row) => {
+            settings.set_string('popup-style', styleKeys[row.selected]);
+        });
+
+        styleGroup.add(styleRow);
+
+        // ── Daily Limit ─────────────────────────────────────────
+
         const limitGroup = new Adw.PreferencesGroup({
             title: _('Daily Limit'),
             description: _('Cumulative Wi-Fi usage at which Cap terminates the interface'),
