@@ -35,6 +35,9 @@ const WARN_FRACTION = 0.90;
  * field 8. */
 const TX_BYTE_COLUMN = 8;
 
+// Reused across ticks — TextDecoder is stateless and safe to share.
+const decoder = new TextDecoder();
+
 /**
  * Top-bar indicator + dropdown for Cap.
  *
@@ -60,6 +63,11 @@ class CapIndicator extends PanelMenu.Button {
         this._haveBaseline = false;
         this._prevRx = 0;
         this._prevTx = 0;
+
+        // Cached values to avoid repeated GSettings IPC every tick.
+        this._cachedLimitMb = this._settings.get_int('daily-limit-mb');
+        this._cachedToday = '';
+        this._isWarning = false;
 
         this._timeoutId = null;
         this._settingsHandlerId = null;
@@ -98,11 +106,12 @@ class CapIndicator extends PanelMenu.Button {
             text: _('Cap: Daily Data Status'),
             style_class: 'cap-readout',
         });
-        section.add(new St.BoxLayout({
+        const titleBox = new St.BoxLayout({
             vertical: true,
             style_class: 'cap-usage-line',
-            children: [this._titleLabel],
-        }));
+        });
+        titleBox.add_child(this._titleLabel);
+        section.add(titleBox);
 
         // Usage line: "742 MB / 1024 MB Used".
         this._usageLabel = new St.Label({text: '0 MB / 0 MB Used'});
@@ -146,10 +155,6 @@ class CapIndicator extends PanelMenu.Button {
             style_class: 'cap-value-entry',
         });
         this._entry.clutter_text.connect('activate', this._onEntryCommitted.bind(this));
-        this._entry.clutter_text.connect('text-changed', () => {
-            // Keep the entry field from cascading into the slider mid-typing;
-            // we only persist on <Enter>.
-        });
         const mbCaption = new St.Label({
             text: _('MB'),
             y_align: Clutter.ActorAlign.CENTER,
@@ -244,7 +249,6 @@ class CapIndicator extends PanelMenu.Button {
             return {rx, tx};
         }
 
-        const decoder = new TextDecoder();
         const text = decoder.decode(contents);
 
         // First two lines are headers; data lines look like:
@@ -277,7 +281,7 @@ class CapIndicator extends PanelMenu.Button {
      * ------------------------------------------------------------------ */
 
     _evaluateThreshold(used) {
-        const limitBytes = this._settings.get_int('daily-limit-mb') * BYTES_PER_MB;
+        const limitBytes = this._cachedLimitMb * BYTES_PER_MB;
         if (used >= limitBytes)
             this._cutoff();
     }
@@ -296,18 +300,22 @@ class CapIndicator extends PanelMenu.Button {
 
     _ensureToday() {
         const stored = this._settings.get_string('current-date');
+        this._cachedToday = this._todayString();
         if (stored === '')
-            this._settings.set_string('current-date', this._todayString());
+            this._settings.set_string('current-date', this._cachedToday);
     }
 
     _checkDayRollover() {
         const stored = this._settings.get_string('current-date');
-        const today = this._todayString();
+        const today = this._cachedToday;
         if (stored !== today) {
-            this._settings.set_string('current-date', today);
-            this._settings.set_int64('used-bytes', 0);
-            // Wi-Fi is intentionally left off; the user re-enables it.
-            this._exhausted = false;
+            // Day changed or first run — recompute and persist.
+            this._cachedToday = this._todayString();
+            if (stored !== this._cachedToday) {
+                this._settings.set_string('current-date', this._cachedToday);
+                this._settings.set_int64('used-bytes', 0);
+                this._exhausted = false;
+            }
         }
     }
 
@@ -345,21 +353,17 @@ class CapIndicator extends PanelMenu.Button {
      * ------------------------------------------------------------------ */
 
     _onLimitChanged() {
-        // Keep the slider/entry in sync when the change came from elsewhere
-        // (e.g. prefs.js), and re-enable Wi-Fi if usage now fits.
-        const mb = this._settings.get_int('daily-limit-mb');
-        this._slider.value = this._limitToFraction(mb);
-        this._entry.set_text(String(mb));
+        this._cachedLimitMb = this._settings.get_int('daily-limit-mb');
+        this._slider.value = this._limitToFraction(this._cachedLimitMb);
+        this._entry.set_text(String(this._cachedLimitMb));
 
-        // _maybeReenable() guards on headroom (limit > used) itself, so this
-        // is safe to attempt whenever Cap is holding Wi-Fi off.
         if (this._wifiDisabledByCap)
             this._maybeReenable();
     }
 
     _maybeReenable() {
         const usedBytes = this._settings.get_int64('used-bytes');
-        const limitBytes = this._settings.get_int('daily-limit-mb') * BYTES_PER_MB;
+        const limitBytes = this._cachedLimitMb * BYTES_PER_MB;
         if (limitBytes > usedBytes) {
             this._runNmcli(['radio', 'wifi', 'on']);
             this._wifiDisabledByCap = false;
@@ -412,27 +416,27 @@ class CapIndicator extends PanelMenu.Button {
      * ------------------------------------------------------------------ */
 
     _refreshUi(dRx, dTx) {
-        const limitMb = this._settings.get_int('daily-limit-mb');
+        const limitMb = this._cachedLimitMb;
         const usedBytes = this._settings.get_int64('used-bytes');
         const limitBytes = limitMb * BYTES_PER_MB;
 
-        // Top-bar rate readout.
         this._panelLabel.set_text(
             `↓ ${formatRate(dRx)}  ↑ ${formatRate(dTx)}`);
 
-        // Warning color when usage crosses the warning threshold.
         const frac = limitBytes > 0 ? usedBytes / limitBytes : 0;
-        if (frac >= WARN_FRACTION)
-            this._panelLabel.add_style_class_name('warning');
-        else
-            this._panelLabel.remove_style_class_name('warning');
+        const shouldWarn = frac >= WARN_FRACTION;
+        if (shouldWarn !== this._isWarning) {
+            this._isWarning = shouldWarn;
+            if (shouldWarn)
+                this._panelLabel.add_style_class_name('warning');
+            else
+                this._panelLabel.remove_style_class_name('warning');
+        }
 
-        // Popup figures.
         const usedMb = usedBytes / BYTES_PER_MB;
         this._usageLabel.set_text(
             `${formatMb(usedMb)} / ${formatMb(limitMb)} Used`);
 
-        // Bar is clamped to [0,1]; saturate at 100% when over.
         this._bar.value = Math.min(1, frac);
 
         this._refreshReenable();
