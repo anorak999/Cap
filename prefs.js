@@ -12,13 +12,41 @@ import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 
-import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/shell/js/extensions/prefs.js';
-
 const MIN_LIMIT_MB = 100;
 const MAX_LIMIT_MB = 50000;
 const BYTES_PER_MB = 1048576;
 
-export default class CapPreferences extends ExtensionPreferences {
+function _(str) {
+    return str;
+}
+
+export default class CapPreferences {
+    constructor(metadata) {
+        this.metadata = metadata;
+        this._dir = metadata.dir;
+        this._path = metadata.path;
+        this._uuid = metadata.uuid;
+    }
+
+    getSettings() {
+        const schema = this.metadata['settings-schema'] || 'org.gnome.shell.extensions.cap';
+
+        const schemaDir = this._dir.get_child('schemas');
+        const defaultSource = Gio.SettingsSchemaSource.get_default();
+        let schemaSource;
+        if (schemaDir.query_exists(null)) {
+            schemaSource = Gio.SettingsSchemaSource.new_from_directory(
+                schemaDir.get_path(), defaultSource, false);
+        } else {
+            schemaSource = defaultSource;
+        }
+
+        const schemaObj = schemaSource.lookup(schema, true);
+        if (!schemaObj)
+            throw new Error(`Schema ${schema} not found for extension ${this._uuid}`);
+        return new Gio.Settings({settings_schema: schemaObj});
+    }
+
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
 
