@@ -111,11 +111,11 @@ class CapIndicator extends PanelMenu.Button {
             style_class: 'cap-usage-line',
         });
         titleBox.add_child(this._titleLabel);
-        section.add(titleBox);
+        section.add_child(titleBox);
 
         // Usage line: "742 MB / 1024 MB Used".
         this._usageLabel = new St.Label({text: '0 MB / 0 MB Used'});
-        section.add(this._usageLabel);
+        section.add_child(this._usageLabel);
 
         // Inline usage bar (0..1) bound to used/limit.
         this._bar = new BarLevel.BarLevel({
@@ -123,7 +123,7 @@ class CapIndicator extends PanelMenu.Button {
             maximumValue: 1.0,
             style_class: 'cap-bar barlevel',
         });
-        section.add(this._bar);
+        section.add_child(this._bar);
 
         section.addSpacer(12);
 
@@ -140,7 +140,7 @@ class CapIndicator extends PanelMenu.Button {
         this._slider.connect('drag-end', this._onSliderCommitted.bind(this));
         sliderBox.add_child(sliderCaption);
         sliderBox.add_child(this._slider);
-        section.add(sliderBox);
+        section.add_child(sliderBox);
 
         // Direct integer entry.
         const entryBox = new St.BoxLayout({style_class: 'cap-limit-row'});
@@ -162,7 +162,7 @@ class CapIndicator extends PanelMenu.Button {
         entryBox.add_child(entryCaption);
         entryBox.add_child(this._entry);
         entryBox.add_child(mbCaption);
-        section.add(entryBox);
+        section.add_child(entryBox);
 
         // Re-enable Wi-Fi button — only visible while Cap holds Wi-Fi off.
         this._reenableBtn = new St.Button({
@@ -173,7 +173,7 @@ class CapIndicator extends PanelMenu.Button {
             can_focus: true,
         });
         this._reenableBtn.connect('clicked', this._onReenableClicked.bind(this));
-        section.add(this._reenableBtn);
+        section.add_child(this._reenableBtn);
 
         this.menu.addMenuItem(section);
     }
