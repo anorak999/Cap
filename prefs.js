@@ -152,6 +152,30 @@ export default class CapPreferences {
         resetRow.add_suffix(resetBtn);
         resetRow.set_activatable_widget(resetBtn);
 
+        // ── About ───────────────────────────────────────────────
+
+        const aboutGroup = new Adw.PreferencesGroup({
+            title: _('About'),
+        });
+        page.add(aboutGroup);
+
+        const urlRow = new Adw.ActionRow({
+            title: _('Source code'),
+            subtitle: 'github.com/anorak999/Cap',
+        });
+        aboutGroup.add(urlRow);
+
+        const urlBtn = new Gtk.Button({
+            label: _('GitHub'),
+            valign: Gtk.Align.CENTER,
+        });
+        urlBtn.connect('clicked', () => {
+            Gio.AppInfo.launch_default_for_uri(
+                'https://github.com/anorak999/Cap', null);
+        });
+        urlRow.add_suffix(urlBtn);
+        urlRow.set_activatable_widget(urlBtn);
+
         window.connect('close-request', () => {
             if (this._usageHandler) {
                 settings.disconnect(this._usageHandler);

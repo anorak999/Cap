@@ -1,103 +1,76 @@
 # Cap
 
-A minimal, raw data-limiting GNOME Shell extension. Cap lives in the top bar,
-tracks daily Wi-Fi telemetry via `/proc/net/dev`, visualizes state in a
-dropdown, and terminates the Wi-Fi interface with `nmcli` the moment the daily
-limit is exhausted.
+A minimal GNOME Shell extension that caps your daily Wi-Fi data usage. Cap
+tracks traffic via `/proc/net/dev`, shows live rates in the top bar, and
+terminates the Wi-Fi interface with `nmcli` the moment the daily limit is
+reached.
 
-Targeted at GNOME Shell 45+ using modern ESM imports. Developed and tested on
-GNOME Shell 48.
-
-## Behavior
-
-- **Telemetry**: `/proc/net/dev` is read once per second; receive and transmit
-  byte deltas are summed (`Δ_total = Δ_rx + Δ_tx`) and accumulated into
-  `used-bytes` for every wireless interface matching `/^wl/`.
-- **Cutoff**: when `used-bytes ≥ daily-limit-mb × 1048576`, Cap
-  1. stops accumulating deltas,
-  2. emits a desktop notification (`Limit exceeded. Interface terminated.`),
-  3. runs `nmcli radio wifi off` asynchronously.
-- **Day rollover** (midnight): `used-bytes` resets to 0 and the exhaustion flag
-  clears, but **Wi-Fi is intentionally left off**. Re-enable it from the
-  dropdown, the preferences window, or GNOME quick settings.
-- **Re-enabling**: raising the limit above current usage (slider or entry)
-  automatically runs `nmcli radio wifi on` and resumes counting. There is also
-  a dedicated *Re-enable Wi-Fi* button in the dropdown that appears only while
-  Cap is holding the interface off.
-
-## Top bar
-
-- Standard state: `↓ {rx rate} ↑ {tx rate}` (e.g. `↓ 4.2 MB/s ↑ 120 KB/s`).
-- Warning state: the label shifts to the system warning color once usage
-  crosses 90% of the daily limit.
-
-## Dropdown styles
-
-Cap ships three switchable panel styles. Pick one from
-`gnome-extensions prefs cap@anorak` → **Appearance**.
-
-### Default
-
-Classic vertical layout with progress bar, slider, and numeric entry.
-
-### Orbit
-
-Ring gauge showing usage proportionally, with a card-style limit slider.
-
-### Strata
-
-Flat row-list with inline bar, percentage readout, and compact slider control.
-
-## Settings
-
-GSettings schema `org.gnome.shell.extensions.cap`:
-
-| Key              | Type | Default     | Notes                                             |
-|------------------|------|-------------|---------------------------------------------------|
-| `daily-limit-mb` | `i`  | `1024`      | Range 100 – 50,000.                               |
-| `used-bytes`     | `x`  | `0`         | Auto-resets to 0 at midnight.                     |
-| `current-date`   | `s`  | `""`        | Tracked day (`YYYY-MM-DD`) for rollover detection.|
-| `popup-style`    | `s`  | `"default"` | `default`, `orbit`, or `strata`.                  |
+GNOME Shell 45+ (ESM imports). Tested on GNOME 48.
 
 ## Install
 
-### One-command (recommended)
+### From extensions.gnome.org
+
+Install from the [GNOME Extensions website](https://extensions.gnome.org/extension/7299/cap/).
+
+### From source
 
 ```sh
-./install.sh        # compiles schemas, links, and enables
-./uninstall.sh      # disables and removes
+git clone https://github.com/anorak999/Cap.git
+cd Cap
+./install.sh      # compiles schemas, symlinks, and enables
 ```
 
-Both scripts must be run from the Cap source directory. After `install.sh`,
-restart GNOME Shell to load the indicator:
+Restart GNOME Shell to load:
 
-- **Wayland**: log out and back in.
-- **X11**: `Alt+F2` → `r` → `Enter`.
+- **Wayland** — log out and back in.
+- **X11** — `Alt+F2` → `r` → `Enter`.
 
-### Manual
+To remove:
 
 ```sh
-# 1. Compile the GSettings schema.
-glib-compile-schemas /home/anorak/Cap/schemas
-
-# 2. Symlink (or copy) into the per-user extensions directory.
-ln -sf /home/anorak/Cap ~/.local/share/gnome-shell/extensions/cap@anorak
-
-# 3. Enable, then restart the shell.
-gnome-extensions enable cap@anorak
-# X11:  Alt+F2 → r → Enter
-# Wayland: log out and back in
+./uninstall.sh
 ```
 
-`nmcli` must be on `$PATH` (shipped with NetworkManager).
+## How it works
 
-## Files
+- **Telemetry** — `/proc/net/dev` is read once per second. Receive and
+  transmit deltas are summed (`rx + tx`) and accumulated per wireless
+  interface matching `/^wl/`.
+- **Cutoff** — when usage exceeds the daily limit, Cap emits a notification
+  and runs `nmcli radio wifi off`.
+- **Midnight rollover** — usage resets to 0. Wi-Fi stays off; re-enable it
+  from the dropdown or GNOME quick settings.
+- **Re-enable** — raise the limit above current usage, or press the
+  *Re-enable Wi-Fi* button.
 
-- `extension.js` — indicator, telemetry loop, state machine, dropdown UI.
-- `prefs.js` — libadwaita preferences window (style, limit, usage reset).
-- `schemas/org.gnome.shell.extensions.cap.gschema.xml` — settings keys.
-- `stylesheet.css` — popup widget styling for all three panel styles.
-- `install.sh` / `uninstall.sh` — one-command install and removal.
+## Top bar
+
+Shows `↓ {rx} ↑ {tx}` live rates. Turns amber at 90% of the daily limit.
+
+## Dropdown styles
+
+Three switchable panel styles in `gnome-extensions prefs cap@anorak`:
+
+| Style | Description |
+|-------|-------------|
+| **Default** | Progress bar, slider, numeric entry. |
+| **Orbit** | Ring gauge with card-style limit control. |
+| **Strata** | Flat row-list with inline bar and status pill. |
+
+## Settings
+
+| Key | Type | Default | Notes |
+|-----|------|---------|-------|
+| `daily-limit-mb` | `i` | `1024` | 100 – 50,000 MB |
+| `used-bytes` | `x` | `0` | Resets at midnight |
+| `current-date` | `s` | `""` | Tracked day (`YYYY-MM-DD`) |
+| `popup-style` | `s` | `"default"` | `default`, `orbit`, or `strata` |
+
+## Requirements
+
+- GNOME Shell 45+
+- `nmcli` on `$PATH` (ships with NetworkManager)
 
 ## License
 
