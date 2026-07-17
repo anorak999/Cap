@@ -1,0 +1,42 @@
+/*
+ * Cap — GNOME Shell data limiter
+ * Stylesheet: sizing and color treatment for the popup panel widgets.
+ */
+
+/* Top-bar indicator label */
+.cap-panel-label {
+    spacing: 6px;
+    margin: 0 6px;
+}
+
+/* Usage figure readouts */
+.cap-readout {
+    font-size: 110%;
+    font-weight: 700;
+}
+
+.cap-usage-line {
+    spacing: 6px;
+}
+
+/* Inline usage bar in the dropdown.
+ * ui/barLevel.js applies the 'barlevel' class by default; we keep that
+ * styling and just constrain the track size so it fits the popup width. */
+.cap-bar {
+    min-width: 300px;
+    height: 18px;
+}
+
+/* Limit control row */
+.cap-limit-row {
+    spacing: 12px;
+}
+
+.cap-value-entry {
+    min-width: 96px;
+}
+
+/* Re-enable Wi-Fi action button (only shown after a cutoff) */
+.cap-reenable-btn {
+    margin-top: 12px;
+}

@@ -1,0 +1,8 @@
+# MiMoCode internal files
+.mimocode/
+
+# .zcode internal files
+.zcode/
+
+# Compiled schemas (regenerable)
+schemas/gschemas.compiled

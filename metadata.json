@@ -1,0 +1,15 @@
+{
+  "uuid": "cap@anorak",
+  "name": "Cap",
+  "description": "Daily Wi-Fi data limiter. Tracks usage via /proc/net/dev and terminates the Wi-Fi interface with nmcli when the daily limit is reached.",
+  "gettext-domain": "cap",
+  "settings-schema": "org.gnome.shell.extensions.cap",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48"
+  ],
+  "url": "https://github.com/anorak999/Cap",
+  "version": 1
+}

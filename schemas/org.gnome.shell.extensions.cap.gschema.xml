@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.cap" path="/org/gnome/shell/extensions/cap/">
+    <key name="daily-limit-mb" type="i">
+      <default>1024</default>
+      <summary>Daily data limit in megabytes</summary>
+      <description>When cumulative Wi-Fi usage reaches this many megabytes, Cap terminates the wireless interface.</description>
+    </key>
+    <key name="used-bytes" type="x">
+      <default>0</default>
+      <summary>Bytes consumed today</summary>
+      <description>Accumulated Wi-Fi byte count for the current calendar day. Reset to 0 automatically at midnight.</description>
+    </key>
+    <key name="current-date" type="s">
+      <default>""</default>
+      <summary>Tracked calendar day</summary>
+      <description>The date (YYYY-MM-DD) for which used-bytes has been accumulated. Used to detect day rollover.</description>
+    </key>
+  </schema>
+</schemalist>
