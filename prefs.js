@@ -161,7 +161,7 @@ export default class CapPreferences {
 
         const urlRow = new Adw.ActionRow({
             title: _('Source code'),
-            subtitle: 'github.com/anorak999/Cap',
+            subtitle: 'github.com/Himath-Rajapaksha/Cap',
         });
         aboutGroup.add(urlRow);
 
@@ -171,7 +171,7 @@ export default class CapPreferences {
         });
         urlBtn.connect('clicked', () => {
             Gio.AppInfo.launch_default_for_uri(
-                'https://github.com/anorak999/Cap', null);
+                'https://github.com/Himath-Rajapaksha/Cap', null);
         });
         urlRow.add_suffix(urlBtn);
         urlRow.set_activatable_widget(urlBtn);

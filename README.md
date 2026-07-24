@@ -16,7 +16,7 @@ Install from the [GNOME Extensions website](https://extensions.gnome.org/extensi
 ### From source
 
 ```sh
-git clone https://github.com/anorak999/Cap.git
+git clone https://github.com/Himath-Rajapaksha/Cap.git
 cd Cap
 ./install.sh      # compiles schemas, symlinks, and enables
 ```
